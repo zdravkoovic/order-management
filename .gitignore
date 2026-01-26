@@ -28,3 +28,6 @@ Homestead.json
 .env.production
 .phpactor.json
 auth.json
+
+# Stop tracking existing Blade files while we don't need them
+*.blade.php

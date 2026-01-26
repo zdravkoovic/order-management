@@ -3,7 +3,6 @@
 namespace App\Application\Abstraction;
 
 use App\Application\Errors\Messages\UserErrorMessage;
-use App\Domain\Shared\Uuid;
 
 final class Result
 {
