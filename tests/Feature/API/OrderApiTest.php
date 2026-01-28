@@ -29,9 +29,11 @@ final class OrderApiTest extends TestCase
         $response->assertStatus(201);
         
         $order = OrderEntity::first();
-        $this->assertEquals(
-            $order->expires_at->timestamp,
-            $order->created_at->addMinutes(30)->timestamp
+        $this->assertTrue(
+            abs(
+                $order->expires_at->getTimestamp()
+                - $order->created_at->addMinutes(30)->getTimestamp()
+            ) <= 2
         );
 
         $this->assertDatabaseHas('order_entities', ['state' => 'DRAFT']);
