@@ -2,7 +2,7 @@
 
 namespace App\Application\Abstraction;
 
-abstract class BaseQueryhandler implements IQueryHandler
+abstract class BaseQueryHandler implements IQueryHandler
 {
     public function __construct() {}
     

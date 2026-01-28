@@ -2,14 +2,14 @@
 
 namespace App\Application\Order\Queries\GetOrder\ById;
 
-use App\Application\Abstraction\BaseQueryhandler;
+use App\Application\Abstraction\BaseQueryHandler;
 use App\Application\Abstraction\IQuery;
 use App\Application\Abstraction\Dto;
 use App\Application\Order\DTOs\OrderDto;
 use App\Domain\Interfaces\IOrderRepository;
 use App\Domain\OrderAggregate\OrderId;
 
-final class GetOrderByIdQueryHandler extends BaseQueryhandler
+final class GetOrderByIdQueryHandler extends BaseQueryHandler
 {
     public function __construct(
         private IOrderRepository $orders
