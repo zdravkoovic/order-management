@@ -6,5 +6,5 @@ use App\Domain\Shared\Uuid;
 
 interface ICommandHandler
 {
-    public function handle(ICommand $command) : Uuid | null;
+    public function handle(ICommand $command) : Uuid | array | null;
 }

@@ -4,8 +4,10 @@ namespace App\Infrastructure\Persistance\Models;
 
 use App\Domain\OrderAggregate\OrderState;
 use App\Domain\OrderAggregate\PaymentMethod;
+use Database\Factories\OrderEntityFactory;
 use DateTimeImmutable;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -23,7 +25,12 @@ use Illuminate\Database\Eloquent\Model;
  */
 class OrderEntity extends Model
 {
-    use HasUuids;
+    use HasUuids, HasFactory;
+
+    protected static function newFactory()
+    {
+        return OrderEntityFactory::new();
+    }
     /**
      * The table
      *

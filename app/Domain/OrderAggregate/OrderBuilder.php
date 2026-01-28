@@ -4,8 +4,6 @@ namespace App\Domain\OrderAggregate;
 
 use DateTimeImmutable;
 
-use function Laravel\Prompts\info;
-
 final class OrderBuilder
 {
     private ?Money $totalAmount = null;
@@ -34,6 +32,14 @@ final class OrderBuilder
     {
         $b = new self();
         $b->state = OrderState::PENDING;
+        $b->updatedAt = new DateTimeImmutable();
+        return $b;
+    }
+
+    public static function expired() : self
+    {
+        $b = new self();
+        $b->state = OrderState::EXPIRED;
         $b->updatedAt = new DateTimeImmutable();
         return $b;
     }
@@ -88,8 +94,6 @@ final class OrderBuilder
 
     public function build(): Order
     {    
-        
-
         return new Order(
             $this->customerId,
             $this->state,

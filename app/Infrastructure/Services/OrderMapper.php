@@ -11,15 +11,16 @@ use App\Domain\OrderAggregate\OrderNumber;
 use App\Domain\OrderAggregate\OrderState;
 use App\Infrastructure\Persistance\Models\OrderEntity;
 
-use function Laravel\Prompts\info;
-
 class OrderMapper
 {
     public function toDomain(OrderEntity $data): Order
     {
-        $order = $data->state === OrderState::DRAFT->value
-            ? OrderBuilder::draft()
-            : OrderBuilder::pending();
+        $order = match (true) 
+        {
+            $data->state === OrderState::DRAFT => OrderBuilder::draft(),
+            $data->state === OrderState::PENDING => OrderBuilder::pending(),
+            $data->state === OrderState::EXPIRED => OrderBuilder::expired(),
+        };
         return $order
                     ->forCustomer(CustomerId::fromString($data->customer_id))
                     ->withId(OrderId::fromString($data->id))

@@ -8,7 +8,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Enum;
 use Illuminate\Validation\Validator;
 
-class CreateOrderRequest extends FormRequest
+class CreateOrderlineRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,34 +26,41 @@ class CreateOrderRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'customer_id' => ['required', 'string'],
-            'is_guest'    => ['required', 'boolean'],
-            'amount'      => ['numeric', 'min:0'],
-            'payment_method' => [new Enum(PaymentMethod::class)],
-            // 'products'       => ['required', 'array', 'min:1'],
-            // 'products.*.product_id' => ['required', 'integer'],
-            // 'products.*.quantity'   => ['required', 'integer', 'min:1'],
-            // 'products.*.price'      => ['required', 'numeric', 'min:0'],
-            'notes'       => ['nullable', 'string', 'max:1000'],
+            'order_id' => ['required', 'string', 'exists:order_entities,id'],
+            'product_ids' => ['required', 'array'],
+            'quantities' => ['required', 'array'],
+
+            'product_ids.*' => ['required', 'integer', 'min:1'],
+            'quantities.*'   => ['required', 'integer', 'min:1'],
         ];
     }
 
+    public function withValidator(Validator $validator): void
+    {
+        $validator->after(function ($validator) {
+            if (
+                count($this->input('product_ids', [])) !==
+                count($this->input('quantities', []))
+            ) {
+                $validator->errors()->add(
+                    'quantity',
+                    'Each product must have exactly one corresponding quantity.'
+                );
+            }
+        });
+    }
 
     public function messages(): array
     {
         return [
-            'customer_id.required' => 'Customer ID is required.',
-            'customer_id.string'   => 'Customer ID must be a string.',
+            'product_id.required' => 'Product ID is required.',
+            'product_id.integer'   => 'Customer ID must be a integer.',
 
-            'is_guest.required' => 'Guest status is required.',
-            'is_guest.boolean'  => 'Guest status must be true or false.',
+            'order_id.required' => 'Order ID is required.',
+            'order_id.*.string'  => 'Order ID must be a string.',
 
-            'amount.required' => 'Amount is required.',
-            'amount.numeric'  => 'Amount must be a number.',
-            'amount.min'      => 'Amount cannot be negative.',
-
-            'payment_method.required' => 'Payment method is required.',
-            'payment_method.enum'     => 'Payment method must be one of: cash, card, paypal.',
+            'quantities.required' => 'Payment method is required.',
+            'quantities.*.integer'     => 'Payment method must be one of: cash, card, paypal.',
 
             'products.required' => 'Order must contain at least one item.',
             'products.array'    => 'Products must be provided as an array.',

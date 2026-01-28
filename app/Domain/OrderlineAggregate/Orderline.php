@@ -5,7 +5,7 @@ namespace App\Domain\OrderlineAggregate;
 use App\Domain\IAggregateRoot;
 use App\Domain\AggregateRoot;
 use App\Domain\OrderAggregate\Money;
-use App\Domain\OrderAggregate\Order;
+use App\Domain\OrderAggregate\OrderId;
 use App\Domain\OrderlineAggregate\Events\QuantityUpdatedEvent;
 
 class Orderline implements IAggregateRoot
@@ -16,24 +16,25 @@ class Orderline implements IAggregateRoot
     public readonly ProductId $productId;
     public readonly Quantity $quantity;
     public readonly Money $price;
-    public readonly Order $order;
+    public readonly OrderId $orderId;
 
-    private function __construct(ProductId $productId, Quantity $quantity, Money $price, Order $order, ?OrderlineId $id = null)
+    private function __construct(ProductId $productId, Quantity $quantity, Money $price, OrderId $orderId, ?OrderlineId $id = null)
     {
         $this->id = $id;
         $this->productId = $productId;
         $this->quantity = $quantity;
         $this->price = $price;
-        $this->order = $order;
+        $this->orderId = $orderId;
     }
 
-    public static function Create(string $productId, int $quantity, float $price, Order $order) : self
+    public static function create(string $productId, int $quantity, float $price, string $orderId) : self
     {
         $orderlineProductId = ProductId::fromString($productId);
         $quantity = Quantity::fromInt($quantity);
         $price = Money::fromFloat($price);
+        $orderId = OrderId::fromString($orderId);
 
-        return new self($orderlineProductId, $quantity, $price, $order);
+        return new self($orderlineProductId, $quantity, $price, $orderId);
     }
 
     public static function reconstitute(
@@ -41,10 +42,10 @@ class Orderline implements IAggregateRoot
         ProductId $productId,
         Quantity $quantity,
         Money $price,
-        Order $order
+        OrderId $orderId
     ) : self {
 
-        return new self($productId, $quantity, $price, $order, $id);
+        return new self($productId, $quantity, $price, $orderId, $id);
     }
 
     public function UpdateQuantity(int $value) : self

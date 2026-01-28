@@ -2,16 +2,17 @@
 
 namespace App\API\Controllers;
 
+use App\API\Http\Requests\CreateOrderlineRequest;
+use App\Application\Abstraction\Bus\ICommandBus;
+use App\Application\Orderline\Commands\CreateOrderline\CreateOrderlineCommand;
 use App\Domain\OrderlineAggregate\Orderline;
 use Illuminate\Http\Request;
 
 class OrderlineController
 {
     public function __construct(
-        
-    )
-    {
-    }
+      private ICommandBus $commandBus
+    ){}
     /**
      * Display a listing of the resource.
      */
@@ -24,9 +25,18 @@ class OrderlineController
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(CreateOrderlineRequest $request)
     {
-        //
+        $validated = $request->validated();
+        
+        $result = $this->commandBus->dispatch(new CreateOrderlineCommand(
+            $validated['order_id'],
+            $validated['product_ids'],
+            $validated['quantities'],
+        ));
+
+        if($result->success) return response()->json($result->data, $result->httpStatus);
+        return response()->json($result->appError, $result->httpStatus);
     }
 
     /**

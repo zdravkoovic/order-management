@@ -7,23 +7,19 @@ use App\Domain\OrderlineAggregate\Orderline;
 use App\Domain\OrderlineAggregate\OrderlineId;
 use App\Infrastructure\Persistance\Models\OrderlineEntity;
 use App\Infrastructure\Services\OrderlineMapper;
-use App\Infrastructure\Services\OrderMapper;
 
 class OrderlineRepository implements IOrderlineRepository
 {
-    public function __construct(
-        private OrderlineMapper $orderlineMapper,
-        private OrderMapper $orderMapper
-    )
+    public function __construct()
     {}
 
-    public function GetById(OrderlineId $id) : Orderline | null
+    public function getById(OrderlineId $id) : Orderline | null
     {
         $orderline = OrderlineEntity::find($id->value());
-        return $this->orderlineMapper->toDomain($orderline);
+        return OrderlineMapper::toDomain($orderline);
     }
 
-    public function IsExists(OrderlineId $id) : bool
+    public function isExists(OrderlineId $id) : bool
     {
         return OrderlineEntity::find($id->value()) != null;
     }
@@ -33,32 +29,34 @@ class OrderlineRepository implements IOrderlineRepository
      *
      * @return Order[] | null$
     */
-    public function GetAll() : iterable | null
+    public function getAll() : iterable | null
     {
         return OrderlineEntity::all();
     }
 
-    public function Add(Orderline $entity) : OrderlineId
+    public function save(Orderline $orderline) : OrderlineId
     {
-        $orderline = OrderlineEntity::create($entity);
-        $orderline->save();
-        return OrderlineId::fromString($orderline->id);
+        $orderlineEntity = OrderlineEntity::create([
+            'product_id' => $orderline->productId->value(),
+            'quantity' => $orderline->quantity->value(),
+            'order_id' => $orderline->orderId->value(),
+        ]);
+        return OrderlineId::fromInt($orderlineEntity->id);
     }
-    public function Update(Orderline $entity) : Orderline
+    public function update(Orderline $entity) : Orderline
     {
         /** @var OrderlineEntity $orderlineEntity */
         $orderlineEntity = OrderlineEntity::where('id', $entity->id->value())->first();
 
-        $orderlineEntity->product_id = $entity->productId->id;
-        $orderlineEntity->order = $this->orderMapper->toEntity($entity->order);
+        $orderlineEntity->product_id = $entity->productId;
         $orderlineEntity->quantity = $entity->quantity->value();
 
         $orderlineEntity->save();
 
-        return $this->orderlineMapper->toDomain($orderlineEntity);
+        return OrderlineMapper::toDomain($orderlineEntity);
     }
 
-    public function Delete(OrderlineId $id) : void
+    public function delete(OrderlineId $id) : void
     {
         OrderlineEntity::destroy($id->value());
     }

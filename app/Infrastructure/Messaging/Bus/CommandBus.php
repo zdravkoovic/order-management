@@ -11,6 +11,7 @@ use App\Application\Errors\Messages\UserErrorMessage;
 use App\Application\Errors\Translators\ApplicationExceptionTranslator;
 use App\Application\Errors\Translators\DomainExceptionTranslator;
 use App\Application\Errors\Translators\InfrastructureExceptionTranslator;
+use App\Application\HttpStatusTranslator;
 use App\Domain\Shared\Uuid;
 use App\Infrastructure\Errors\InfrastructureExceptions;
 use DomainException;
@@ -29,7 +30,7 @@ final class CommandBus implements ICommandBus
     {
         /** @var ICommandHandler $handler */
         $handler = $this->map[$command::class] ?? throw new LogicException("No handler found for" . $command::class);
-        $core = function (ICommand $command) use ($handler) : Uuid | null {
+        $core = function (ICommand $command) use ($handler) : Uuid | array | null {
             return $handler->handle($command);
         };
         $pipeline = array_reduce(
@@ -38,9 +39,9 @@ final class CommandBus implements ICommandBus
             $core
         );
         try {
-            /** @var ?Uuid $result */
+            /** @var ?array $result */
             $result = $pipeline($command);
-            return Result::success([$result->value()]);
+            return Result::success([$result], HttpStatusTranslator::command($command));
         } catch (DomainException $domain) {
             $appError = DomainExceptionTranslator::translate($domain);
             return Result::fail($appError);

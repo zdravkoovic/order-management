@@ -13,8 +13,9 @@ return new class extends Migration
     {
         Schema::create('orderline_entities', function (Blueprint $table) {
             $table->id();
-            $table->string('product_id', 36);
-            $table->integer('quantity', false, true);
+            $table->string('product_id', 36)->require();
+            $table->integer('quantity', false, true)->require();
+            $table->double('price')->require();
             $table->foreignUuid('order_id')->constrained('order_entities', 'id')->cascadeOnDelete();
             $table->timestamps();
         });

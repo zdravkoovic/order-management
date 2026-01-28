@@ -6,6 +6,7 @@ use App\API\Http\Requests\CreateOrderRequest;
 use App\Application\Abstraction\Bus\ICommandBus;
 use App\Application\Abstraction\Bus\IQueryBus;
 use App\Application\Order\Commands\CreateOrder\CreateOrderCommand;
+use App\Application\Order\Commands\DeleteOrder\DeleteOrderCommand;
 use App\Application\Order\Queries\GetOrder\ById\GetOrderByIdQuery;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -87,6 +88,8 @@ class OrderController
      */
     public function destroy(string $id)
     {
-        //
+        $result = $this->commandBus->dispatch(new DeleteOrderCommand($id));
+        if($result->success) return response()->json($result, 204);
+        return response()->json($result->appError, $result->httpStatus);
     }
 }

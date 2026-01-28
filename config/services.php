@@ -35,4 +35,12 @@ return [
         ],
     ],
 
+    'customer' => [
+        'uri' => env('CUSTOMER_SERVICE_URI', 'http://localhost:8030/api/v1/customers/'),
+    ],
+
+    'product' => [
+        'uri' => env('PRODUCT_SERVICE_URI', 'http://localhost:8050/api/v1/products'),
+    ],
+
 ];

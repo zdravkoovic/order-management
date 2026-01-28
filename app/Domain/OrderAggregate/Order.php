@@ -20,11 +20,11 @@ class Order implements IAggregateRoot
     public readonly ?OrderNumber $reference;
     public readonly ?Money $totalAmount;
     public readonly ?PaymentMethod $paymentMethod;
-    public readonly OrderState $state;
     public readonly CustomerId $customerId;
     public readonly DateTimeImmutable $expiresAt;
     public readonly DateTimeImmutable $createdDate;
     public readonly ?DateTimeImmutable $lastModifiedDate;
+    public OrderState $state;
 
     public function __construct(
         CustomerId $customerId,
@@ -34,14 +34,14 @@ class Order implements IAggregateRoot
         ?Money $totalAmount = null, 
         ?OrderNumber $orderNumber = null, 
         ?OrderId $id = null, 
-        ?DateTimeImmutable $createdDate, 
+        ?DateTimeImmutable $createdDate = null, 
         ?DateTimeImmutable $lastModifiedDate = null
     )
     {
         // invariants
         if($state === OrderState::PENDING && !$orderNumber) throw new ReferenceUndefinedException($id);
-        if($state === OrderState::PENDING && !$totalAmount) throw new TotalAmountViolationException($id);
-        if($state === OrderState::PENDING && !$paymentMethod) throw new PaymentMethodUndefinedException($id);
+        if($state === OrderState::PENDING && (!$totalAmount || $totalAmount->equals(Money::zero()))) throw new TotalAmountViolationException($id);
+        if($state === OrderState::PENDING && (!$paymentMethod || $paymentMethod === PaymentMethod::UNDEFINED)) throw new PaymentMethodUndefinedException($id);
 
         $this->id = $id;
         $this->reference = $orderNumber;

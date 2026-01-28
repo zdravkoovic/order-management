@@ -29,4 +29,8 @@ final class Money
     {
         return new self(0.0);
     }
+
+    public function equals(Money $other): bool {
+        return $this->value === $other->value();
+    }
 }

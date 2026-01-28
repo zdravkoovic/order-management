@@ -8,17 +8,17 @@ use App\Infrastructure\Persistance\Models\OrderlineEntity;
 
 interface IOrderlineRepository
 {
-    public function GetById(OrderlineId $id) : Orderline | null;
-    public function IsExists(OrderlineId $id) : bool;
+    public function getById(OrderlineId $id) : Orderline | null;
+    public function isExists(OrderlineId $id) : bool;
     
     /**
      * Get all orders.
      *
      * @return Orderline[]
      */
-    public function GetAll() : iterable | null;
+    public function getAll() : iterable | null;
     
-    public function Add(Orderline $entity) : OrderlineId;
-    public function Update(Orderline $entity) : Orderline;
-    public function Delete(OrderlineId $id) : void;
+    public function save(Orderline $entity) : OrderlineId;
+    public function update(Orderline $entity) : Orderline;
+    public function delete(OrderlineId $id) : void;
 }

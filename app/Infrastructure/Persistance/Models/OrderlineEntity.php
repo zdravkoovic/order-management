@@ -2,6 +2,8 @@
 
 namespace App\Infrastructure\Persistance\Models;
 
+use Database\Factories\OrderlineEntityFactory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 
@@ -16,26 +18,35 @@ use Illuminate\Database\Eloquent\Model;
  */
 class OrderlineEntity extends Model
 {
+    use HasFactory;
+
+    protected static function newFactory()
+    {
+        return OrderlineEntityFactory::new();
+    }
     /**
      * The table
      *
      * @var string
      */
-    protected $table = 'orderlines';
+    protected $table = 'orderline_entities';
+
+    public $incrementing = true;
+
+    protected $keyType = 'int';
 
     protected $fillable = [
-        'id',
-        'productId',
+        'product_id',
         'quantity',
         'order_id',
+        'created_at',
+        'updated_at'
     ];
 
-    /**
-     * The storage format of the model's date columns.
-     *
-     * @var string
-    */
-    protected $dateFormat = 'd/m/Y H:i:s';
+    protected $casts = [
+        'created_at' => 'immutable_datetime',
+        'updated_at' => 'immutable_datetime'
+    ];
 
     public function order()
     {

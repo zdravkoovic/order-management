@@ -11,7 +11,7 @@ abstract class BaseCommandHandler implements ICommandHandler
         // private IDomainEventDispatcher $domainEventDispatcher
     ){}
 
-    public function handle(ICommand $command) : Uuid | null
+    public function handle(ICommand $command) : Uuid | array | null
     {
         $result = $this->Execute($command);
 
@@ -32,7 +32,7 @@ abstract class BaseCommandHandler implements ICommandHandler
         return $result;
     }
 
-    protected abstract function Execute(ICommand $command) : Uuid | null;
+    protected abstract function Execute(ICommand $command) : Uuid | array | null;
     protected abstract function GetAggregateRoot() : IAggregateRoot | null;
     protected abstract function ClearAggregateState() : void;
 }

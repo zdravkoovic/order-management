@@ -2,6 +2,9 @@
 
 namespace App\Infrastructure\Services;
 
+use App\Domain\Interfaces\IOrderRepository;
+use App\Domain\OrderAggregate\Money;
+use App\Domain\OrderAggregate\OrderId;
 use App\Domain\OrderlineAggregate\Orderline;
 use App\Domain\OrderlineAggregate\OrderlineId;
 use App\Domain\OrderlineAggregate\ProductId;
@@ -11,28 +14,26 @@ use App\Infrastructure\Persistance\Models\OrderlineEntity;
 
 class OrderlineMapper
 {
-    public function __construct(
-        private OrderMapper $mapper
-    ){}
+    private function __construct(){}
 
-    public function toDomain(OrderlineEntity $data): Orderline
+    public static function toDomain(OrderlineEntity $data): Orderline
     {
         return Orderline::reconstitute(
-            OrderlineId::fromString($data->id),
+            OrderlineId::fromInt($data->id),
             ProductId::fromString($data->product_id),
             Quantity::fromInt($data->quantity),
-            $this->mapper->toDomain($data->order)
+            Money::fromFloat($data->amount),
+            OrderId::fromString($data->order_id)
         );
     }
 
-    public function toEntity(Orderline $order): OrderlineEntity
+    public static function toEntity(Orderline $orderline): OrderlineEntity
     {
         $entity = new OrderlineEntity();
-        $entity->id = $order->id->value()->__toString();
-        $entity->product_id = $order->productId;
-        $entity->quantity = $order->quantity->value();
-        $entity->order = $this->mapper->toEntity($order->order);
-        $entity->order_id = $entity->order->id;
+        $entity->id = $orderline->id?->value();
+        $entity->product_id = $orderline->productId->value();
+        $entity->quantity = $orderline->quantity->value();
+        $entity->order_id = $orderline->orderId->value();
         return $entity;
     }
 }
