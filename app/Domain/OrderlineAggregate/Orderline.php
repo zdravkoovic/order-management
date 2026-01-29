@@ -14,7 +14,7 @@ class Orderline implements IAggregateRoot
 
     public readonly ?OrderlineId $id;
     public readonly ProductId $productId;
-    public readonly Quantity $quantity;
+    public Quantity $quantity;
     public readonly Money $price;
     public readonly OrderId $orderId;
 
