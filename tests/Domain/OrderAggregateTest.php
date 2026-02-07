@@ -2,19 +2,14 @@
 
 namespace Tests\Domain;
 
-use App\Application\Errors\ProductQuantityTooLowException;
 use App\Domain\OrderAggregate\Events\OrderCreated;
 use App\Domain\OrderAggregate\Events\OrderItemAdded;
 use App\Domain\OrderAggregate\Events\OrderItemRemoved;
 use App\Domain\OrderAggregate\Order;
-use App\Domain\OrderAggregate\OrderlineBuilder;
 use App\Domain\OrderAggregate\ValueObjects\Customer;
-use App\Domain\OrderAggregate\ValueObjects\Money;
-use App\Domain\OrderAggregate\ValueObjects\OrderId;
 use App\Domain\OrderAggregate\ValueObjects\OrderState;
 use App\Domain\OrderAggregate\ValueObjects\PaymentMethod;
-use App\Domain\OrderAggregate\ValueObjects\ProductId;
-use App\Domain\OrderAggregate\ValueObjects\Quantity;
+use App\Infrastructure\Errors\DuplicateDraftOrderByCustomerException;
 use DateTimeImmutable;
 use Mockery;
 use PHPUnit\Framework\Attributes\Test;
@@ -86,6 +81,21 @@ class OrderAggregateTest extends TestCase
                 new OrderItemRemoved(self::ORDER_UUID, self::PRODUCT_ID, self::QUANTITY, $this->expiresAt->format('Y-m-d h:i:s'))
             ]);
     }
+
+    // #[Test]
+    // public function cannot_create_draft_order_for_customer_if_it_already_exists(): void
+    // {
+    //     $this->order
+    //         ->given([
+    //             new OrderCreated(self::CUSTOMER_UUID, $this->expiresAt->format('Y-m-d h:i:s')),
+    //             new OrderItemAdded(self::ORDER_UUID, self::PRODUCT_ID, self::QUANTITY, self::PRICE, self::PRODUCT_NAME)
+    //         ])
+    //         ->when(function (Order $orderAggregate): void {
+    //             $this->assertExceptionThrown(function () {
+    //                 $this->createOrderOnly();
+    //             }, DuplicateDraftOrderByCustomerException::class);
+    //         });
+    // }
 
 
     protected function setUp(): void
